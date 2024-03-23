@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import StarRating from './StarRating';
 
 const tempMovieData = [
   {
@@ -62,6 +63,7 @@ export default function App() {
       </Navbar>
 
       <Main>
+        {/* this is also possible using the element attribute but using children is the method mostly used */}
         <Box element={<MovieList movies={movies} />} />
         <Box
           element={
@@ -177,6 +179,9 @@ function Movie({ movie }) {
           <span>🗓</span>
           <span>{movie.Year}</span>
         </p>
+      </div>
+      <div className="star-container">
+        <StarRating maxRating={10} size={18} defaultRating={5} />
       </div>
     </li>
   );
