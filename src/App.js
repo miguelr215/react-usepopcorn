@@ -57,10 +57,21 @@ export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
 
+  // FETCH
+  // useEffect(function () {
+  //   fetch(`http://www.omdbapi.com/?i=tt3896198&apikey=${KEY}&s=old school`)
+  //     .then((res) => res.json())
+  //     .then((data) => setMovies(data.Search));
+  // }, []);
   useEffect(function () {
-    fetch(`http://www.omdbapi.com/?i=tt3896198&apikey=${KEY}&s=old school`)
-      .then((res) => res.json())
-      .then((data) => setMovies(data.Search));
+    async function fetchMovies() {
+      const res = await fetch(
+        `http://www.omdbapi.com/?i=tt3896198&apikey=${KEY}&s=old school`
+      );
+      const data = await res.json();
+      setMovies(data.Search);
+    }
+    fetchMovies();
   }, []);
 
   return (
