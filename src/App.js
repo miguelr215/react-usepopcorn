@@ -56,6 +56,9 @@ const KEY = '5eb794a6';
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const query = 'old school';
 
   // FETCH
   // useEffect(function () {
@@ -65,11 +68,26 @@ export default function App() {
   // }, []);
   useEffect(function () {
     async function fetchMovies() {
-      const res = await fetch(
-        `http://www.omdbapi.com/?i=tt3896198&apikey=${KEY}&s=old school`
-      );
-      const data = await res.json();
-      setMovies(data.Search);
+      try {
+        setIsLoading(true);
+        const res = await fetch(
+          `http://www.omdbapi.com/?i=tt3896198&apikey=${KEY}&s=${query}`
+        );
+
+        if (!res.ok)
+          throw new Error('Something went wrong with fetching movies');
+
+        const data = await res.json();
+
+        if (data.Response === 'False') throw new Error('No movies found');
+
+        setMovies(data.Search);
+        console.log(data.Search);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setIsLoading(false);
+      }
     }
     fetchMovies();
   }, []);
@@ -83,7 +101,7 @@ export default function App() {
 
       <Main>
         {/* this is also possible using the element attribute but using children is the method mostly used */}
-        <Box element={<MovieList movies={movies} />} />
+        {/* <Box element={<MovieList movies={movies} />} />
         <Box
           element={
             <>
@@ -91,16 +109,31 @@ export default function App() {
               <WatchedMoviesList watched={watched} />
             </>
           }
-        />
-        {/* <Box>
-          <MovieList movies={movies} />
+        /> */}
+        <Box>
+          {/* {isLoading ? <Loader /> : <MovieList movies={movies} />} */}
+          {!isLoading && !error && <MovieList movies={movies} />}
+          {error && <ErrorMessage message={error} />}
+          {isLoading && <Loader />}
         </Box>
         <Box>
           <WatchedSummary watched={watched} />
           <WatchedMoviesList watched={watched} />
-        </Box> */}
+        </Box>
       </Main>
     </>
+  );
+}
+
+function Loader() {
+  return <p className="loader">Loading...</p>;
+}
+
+function ErrorMessage({ message }) {
+  return (
+    <p className="error">
+      <span>⚠️</span> {message}
+    </p>
   );
 }
 
@@ -148,7 +181,7 @@ function Main({ children }) {
   return <main className="main">{children}</main>;
 }
 
-function Box({ element }) {
+function Box({ children }) {
   const [isOpen, setIsOpen] = useState(true);
 
   return (
@@ -156,7 +189,7 @@ function Box({ element }) {
       <button className="btn-toggle" onClick={() => setIsOpen((open) => !open)}>
         {isOpen ? '-' : '+'}
       </button>
-      {isOpen && element}
+      {isOpen && children}
     </div>
   );
 }
