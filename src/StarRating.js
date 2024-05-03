@@ -8,6 +8,7 @@ const containerStyle = {
 };
 
 const starContainerStyle = {
+  width: '100%',
   display: 'flex',
   gap: '4px',
 };
