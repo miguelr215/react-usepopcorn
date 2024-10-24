@@ -20,6 +20,7 @@ StarRating.propTypes = {
   className: PropTypes.string,
   messages: PropTypes.string,
   defaultRating: PropTypes.number,
+  onSetRating: PropTypes.func,
 };
 
 export default function StarRating({
@@ -29,6 +30,7 @@ export default function StarRating({
   className = '',
   messages = [],
   defaultRating = 0,
+  onSetRating,
 }) {
   const [rating, setRating] = useState(defaultRating);
   const [tempRating, setTempRating] = useState(0);
@@ -42,6 +44,7 @@ export default function StarRating({
 
   function handleRating(rating) {
     setRating(rating);
+    onSetRating(rating);
   }
 
   function handleMouseEnter(rating) {
@@ -86,6 +89,7 @@ function Star({ onRate, full, onHoverIn, onHoverOut, color, size }) {
 
   return (
     <span
+      role="button"
       style={starStyle}
       onClick={onRate}
       onMouseEnter={onHoverIn}
